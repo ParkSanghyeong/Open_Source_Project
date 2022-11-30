@@ -2,13 +2,13 @@ import requests
 import uuid
 import time
 import json
-import matplotlib.pyplot as plt
+#import matplotlib.pyplot as plt
 
 def get_ocr():  # naver ocr api call
     api_url = 'https://q69y1dp5m5.apigw.ntruss.com/custom/v1/19317/8315c15d37e6a053d46eee76993430ab9fe44e3e59573d9194b572a1093d9f68/general'
     secret_key = 'R2tHWURKS0NIQnJCVHFQU0hwUVZ3amZJVm1BQXBmcE0='
     image_file = './result/binary/binary.jpg'
-    #image_file = './Open_Source_Project/result/binary/KakaoTalk_20221129_232442476.jpg'  # 테스트 케이스
+    # image_file='./Open_Source_Project/result/binary/KakaoTalk_20221129_232442476.jpg'# 테스트 케이스
     headers = {
         'X-OCR-SECRET': secret_key
     }
@@ -33,6 +33,13 @@ def get_ocr():  # naver ocr api call
     return res
     #sorting(res)
 
+def find_ingredient(string):  # 성분 존재하는 지 찾음
+    ingred = input('type what you looking for : ')
+    if (string.find(ingred) != -1):
+        print("exist")
+    else:
+        print("don't exist")
+
 def sorting(res):  # json에서 디코딩 된 데이터를 원하는 데이터(text)만 가져와서 워하는 dictionary 형태로 저장
     length = len(res['images'][0]['fields'])
     datas = ""
@@ -41,6 +48,7 @@ def sorting(res):  # json에서 디코딩 된 데이터를 원하는 데이터(t
     # 식품에 대한 정보를 저장할 dictionary
     # 트랜스 지방은 1일 영양성분표 기준치가 존재하지 않음.. 그래서 %가 없음
     # print(datas)
+    #find_ingredient(datas)
     info = {
         '총내용량': '',
         '영양정보': '',
@@ -98,7 +106,7 @@ def sorting(res):  # json에서 디코딩 된 데이터를 원하는 데이터(t
 
 
 def recalculate(info):
-    print(info)
+    # print(info)
     standard = {  # 기준치(2000kcal 기준)
         '탄수화물': '324', '당류': '100',
         '식이섬유': '25', '단백질': '55',
@@ -205,9 +213,16 @@ def recalculate(info):
                 Ratio = Ratio + '%'
                 adjusted_info[ingredient_name]['비율'] = Ratio
 
-    print("============ adjusted ==============")
-    print(adjusted_info)
+    print("===================== adjusted =====================")
+    # print(adjusted_info)
     # 함량은 존재하지만 비율이 0%로 였던 것은 일정 기준치 이하면 0이라 표현할 수 있기 때문, 허나 여기에서는 고려를 안함
-    # ex) 나트륨 : 5mg ,0% -> 5mg, 0.227%
-
+    # e.x) 나트륨 : 5mg ,0% -> 5mg, 0.227%
+    print(info_values[1])
+    for i in range(0, len(info_values)):
+        if (i < 2):
+            print(info_keys[i])
+            print(adjusted_info[info_keys[i]])
+        elif ((i >= 2) & (adjusted_info[info_keys[i]]['함량'] != '')):
+            print(info_keys[i])
+            print(adjusted_info[info_keys[i]]['함량'] + ' , ' + adjusted_info[info_keys[i]]['비율'])
 #get_ocr()

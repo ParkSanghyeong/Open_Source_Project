@@ -1,3 +1,5 @@
+import os
+import sys
 import cv2
 import numpy as np
 
@@ -27,6 +29,9 @@ def close(image):
     return result
 
 def get_binary_thres(img_path, save_path) :
+    if (os.path.exists(img_path) == False) :
+        sys.exit("File not found")
+    
     image_gray = cv2.imread(img_path, cv2.IMREAD_GRAYSCALE)
     image_binary = binary_threshold(image_gray)
     cv2.imwrite(save_path, image_binary)
